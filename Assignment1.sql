@@ -28,12 +28,19 @@ JOIN [JOB_PORTAL_DB].[dbo].[Security_Logins] AS SL ON AP.Login = SL.Id
 WHERE AP.Current_Salary IN ( SELECT MAX(Current_Salary) FROM  [JOB_PORTAL_DB].[dbo].[Applicant_Profiles] WHERE Currency = AP.Currency GROUP BY Currency)
 ORDER BY AP.Currency;
 
+--4. For each company, determine the number of jobs posted. If a company doesn't have posted jobs, show 0 for that company. 
+--Output Colums : Company Name (English Only), #Jobs Posted (show 0 if none)
+--Order by: #Jobs Posted
 
 SELECT CD.Company_Name AS [Company Name], COUNT(CJ.Company) AS [#Jobs Posted] FROM [JOB_PORTAL_DB].[dbo].[Company_Profiles] AS CP
 JOIN [JOB_PORTAL_DB].[dbo].[Company_Descriptions] CD ON CP.Id = CD.Company AND CD.LanguageID = 'EN'
 LEFT JOIN [JOB_PORTAL_DB].[dbo].[Company_Jobs] CJ ON CP.Id = CJ.Company
 GROUP BY CD.Company_Name  
 ORDER BY [#Jobs Posted];
+
+--5. Determine the total number of companies that have posted jobs and the total number of companies that have never posted jobs in one data set with 2 rows like the one below:
+-- Clients with Posted Jobs:
+-- Clients without Posted Jobs:
 
 
 SELECT 'Clients with Posted Jobs:' AS [Title], COUNT(DISTINCT CP.Id) AS [NNN] FROM [JOB_PORTAL_DB].[dbo].[Company_Profiles] AS CP
@@ -43,3 +50,4 @@ SELECT 'Clients without Posted Jobs:' AS [Title], COUNT(DISTINCT CP.Id) AS [NNN]
 LEFT JOIN [JOB_PORTAL_DB].[dbo].[Company_Jobs] AS CJ ON CP.Id = CJ.Company
 
 WHERE CJ.Company IS NULL;
+
